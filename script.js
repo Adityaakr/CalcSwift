@@ -10,35 +10,61 @@ function deleteLast() {
 
 function appendToDisplay(value) {
     const lastChar = display.value.charAt(display.value.length - 1);
-    if ((isOperator(lastChar) && isOperator(value)) || (lastChar === '.' && isOperator(value))) {
-        return;
+
+    if (value === "." && lastChar === ".") {
+        return; // Avoid consecutive decimal points
     }
-    display.value += value;
+
+    if (isOperator(lastChar) && isOperator(value)) {
+        return; // Avoid consecutive operators
+    }
+
+    if ((value === "-" || value === "+") && (lastChar === "+" || lastChar === "-")) {
+        // Convert 2+- to 2- or 2-- to 2+
+        display.value = display.value.slice(0, -1) + value;
+    } else if (value === "+" && lastChar === "-") {
+        // Convert 2-+ to 2+
+        display.value = display.value.slice(0, -2) + value;
+    } else {
+        display.value += value;
+    }
 }
 
 function calculate() {
+    const inputValue = display.value;
+
     try {
-        const inputValue = display.value;
-        if (isValidExpression(inputValue)) {
-            const result = eval(inputValue);
-            if (result === Infinity || result === -Infinity) {
-                display.value = "Cannot Divide by Zero";
-            } else {
-                display.value = result;
-            }
+        const result = eval(inputValue);
+
+        if (!isValidResult(result)) {
+            display.value = "Invalid Result";
         } else {
-            display.value = "Invalid Expression";
+            display.value = result;
         }
     } catch (error) {
         display.value = "Error";
     }
 }
 
-function isValidExpression(expression) {
-    const regex = /^[-+*/0-9().]+$/;
-    return regex.test(expression);
+function isValidResult(result) {
+    return Number.isFinite(result);
 }
 
 function isOperator(char) {
     return char === '+' || char === '-' || char === '*' || char === '/';
 }
+
+// Listen for keyboard input
+document.addEventListener("keydown", (event) => {
+    const key = event.key;
+    
+    if (key === "Backspace") {
+        deleteLast();
+    } else if (key === "Enter") {
+        calculate();
+    } else if (key === "Escape") {
+        clearDisplay();
+    } else if (key.match(/[0-9.+\-*/]/)) {
+        appendToDisplay(key);
+    }
+});
