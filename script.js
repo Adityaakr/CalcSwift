@@ -40,16 +40,6 @@ function appendToDisplay(value) {
         return input + value;
       }
       
-      // Example usage:
-      let input = "";
-      console.log(handleOperators(input, '+'));  // Output: "+"
-      console.log(handleOperators(input, '-'));  // Output: "-"
-      console.log(handleOperators(input, '*'));  // Output: "*"
-      
-      input = "+";
-      console.log(handleOperators(input, '+'));  // Output: "++"
-      console.log(handleOperators(input, '-'));  // Output: "+"
-      
     if ((value === "-" || value === "+") && (lastChar === "+" || lastChar === "-")) {
         // Convert the operator
         display.value = display.value.slice(0, -1) + value;
