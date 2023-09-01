@@ -9,22 +9,50 @@ function deleteLast() {
 }
 
 function appendToDisplay(value) {
-    const lastChar = display.value.charAt(display.value.length - 1);
+    const lastChar = display.value.slice (-1);
 
     if (value === "." && lastChar === ".") {
         return; // Avoid consecutive decimal points
     }
 
-    if (isOperator(lastChar) && isOperator(value)) {
-        return; // Avoid consecutive operators
-    }
-
+    function handleOperators(input, value) {
+        // Define a function to check if a character is an operator
+        function isOperator(char) {
+          return char === '+' || char === '-';
+        }
+      
+        // Check if the input is empty or value is not an operator
+        if (!input || !isOperator(value)) {
+          return input + value;
+        }
+      
+        // Get the last character in the input
+        const lastChar = input.charAt(input.length - 1);
+      
+        // Check if both the last character and the new value are operators of the same kind
+        if (isOperator(lastChar) && isOperator(value) && lastChar === value) {
+          return input;
+        } else if (lastChar === '-' && value === '+') {
+          // Replace the last character with the new value
+          return input.slice(0, -1) + value;
+        }
+      
+        return input + value;
+      }
+      
+      // Example usage:
+      let input = "";
+      console.log(handleOperators(input, '+'));  // Output: "+"
+      console.log(handleOperators(input, '-'));  // Output: "-"
+      console.log(handleOperators(input, '*'));  // Output: "*"
+      
+      input = "+";
+      console.log(handleOperators(input, '+'));  // Output: "++"
+      console.log(handleOperators(input, '-'));  // Output: "+"
+      
     if ((value === "-" || value === "+") && (lastChar === "+" || lastChar === "-")) {
-        // Convert 2+- to 2- or 2-- to 2+
+        // Convert the operator
         display.value = display.value.slice(0, -1) + value;
-    } else if (value === "+" && lastChar === "-") {
-        // Convert 2-+ to 2+
-        display.value = display.value.slice(0, -2) + value;
     } else {
         display.value += value;
     }
@@ -68,3 +96,4 @@ document.addEventListener("keydown", (event) => {
         appendToDisplay(key);
     }
 });
+ 
